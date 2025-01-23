@@ -1,0 +1,73 @@
+services:
+  mongodb:
+    container_name: mongodb
+    hostname: mongodb
+    image: mongo
+    volumes:
+      - ./data/mongodb:/data/db
+    environment:
+      MONGO_USERNAME: root
+      MONGO_PASSWORD: root
+    networks:
+      - webnet
+
+  mongodb-compass:
+    container_name: compass
+    hostname: compass
+    image: mongo-express:1.0.0-18-alpine3.18
+    environment:
+      MONGODB_SERVER: "mongodb"
+      MONGODB_PORT: "27017"
+      MONGODB_ENABLE_ADMIN: "true"
+      MONGODB_ADMINUSERNAME: "root"
+      MONGODB_ADMINPASSWORD: "root"
+      BASICAUTH_USERNAME: "root"
+      BASICAUTH_PASSWORD: "root"
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongodb
+    networks:
+      - webnet
+
+  fastapi:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: fastapi
+    hostname: fastapi
+    volumes:
+      - ./api:/app
+    depends_on:
+      - mongodb
+    ports:
+      - 8000:8000
+    environment:
+      MONGODB_USER: "root"
+      MONGODB_PASSWORD: "root"
+      MONGODB_PORT: "27017"
+      MONGODB_HOSTNAME: "mongodb"
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "8000"
+    networks:
+      - webnet
+
+  streamlit:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: streamlit
+    hostname: streamlit
+    volumes:
+      - ./app:/app
+    ports:
+      - 8501:8501  # Mapeia a porta 8501 no host para o Streamlit
+    depends_on:
+      - mongodb
+    environment:
+      API_URL: http://fastapi:8000/
+    networks:
+      - webnet
+
+networks:
+  webnet:
