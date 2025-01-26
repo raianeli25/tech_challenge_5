@@ -4,9 +4,7 @@ WORKDIR /app
 
 COPY . /app
 
-# COPY ./app/requirements.txt /app/requirements.txt
-
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD ["streamlit", "run", "app.py"]
+CMD ["sh", "-c", "streamlit run app.py --server.address $ADDRESS --server.port $PORT"]
