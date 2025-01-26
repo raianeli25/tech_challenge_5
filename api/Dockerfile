@@ -7,4 +7,4 @@ COPY . /app
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD ["uvicorn", "main:app"]
+CMD ["sh", "-c", "uvicorn main:app --host $HOST --port $PORT --reload"]
