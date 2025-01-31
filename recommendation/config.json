@@ -1,0 +1,7 @@
+{
+    "FPATH_TRAIN" : "../data/train_reduced/*.csv",
+    "FPATH_ITEMS" : "../data/items_reduced/*.csv",
+    "TREATED_TRAIN_CSV" : "../data/treated_reduced/full_training_data.csv",
+    "TREATED_ITEMS_CSV" : "../data/treated_reduced/full_items.csv"
+    
+}
