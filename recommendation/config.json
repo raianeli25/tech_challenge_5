@@ -5,5 +5,6 @@
     "TREATED_ITEMS_CSV" : "../data/treated_reduced/full_items.csv",
     "PREPROCESSED_SPACY_ITEMS" : "../data/treated_reduced/full_items_preprocessed.csv",
     "CLUSTER_FEATURES_TXT" : "../data/treated_reduced/clusters_analysis.txt",
-    "DF_ITEMS_CLUSTERED_FEATURES" : "../data/treated_reduced/items_df_clustered_features.csv"
+    "DF_ITEMS_CLUSTERED_FEATURES" : "../data/treated_reduced/items_df_clustered_features.csv",
+    "DF_ITEMS_CLUSTERED_FEATURES_ADJ" : "../data/treated_reduced/items_df_clustered_features_adj.csv"
 }
