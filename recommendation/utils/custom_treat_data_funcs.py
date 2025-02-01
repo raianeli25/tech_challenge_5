@@ -1,6 +1,10 @@
 import glob
 import pandas as pd
+import spacy
 from typing import Any
+
+# Load Portuguese model
+nlp = spacy.load("pt_core_news_sm")
 
 def read_all_csvs_into_pandas(fpath:str)->pd.DataFrame:
     """
@@ -76,3 +80,11 @@ def check_if_exploded_df_size_is_ok(df:pd.DataFrame, exploded_df:pd.DataFrame)->
     A return = True means the exploded df is possible accurate.
     """
     return exploded_df.shape[0] == df["historySize"].sum().item()
+
+def remove_stopwords(text:str):
+    """
+    Preprocess function for removing stopwords
+    """
+    doc = nlp(text.lower())
+    tokens = [token.text for token in doc if token.is_alpha and not token.is_stop]
+    return ' '.join(tokens)
