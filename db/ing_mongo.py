@@ -1,10 +1,27 @@
-import os
-
+import pandas as pd
 from pymongo import MongoClient
 
-# client = MongoClient('mongodb://root:root@mongo:27017/')
-# client = MongoClient(f'mongodb://{os.getenv('MONGO_USER')}:{os.getenv('MONGO_PASSWORD')}@{os.getenv('MONGO_HOST')}:{os.getenv('MONGO_PORT')}')
+df_movies = pd.read_csv('../pipeline/movies.csv', 
+    sep='\t', 
+    encoding='latin-1', 
+    usecols=['movie_id', 'title', 'genres']
+)
+df_ratings = pd.read_csv('../pipeline/ratings.csv', 
+    sep='\t', 
+    encoding='latin-1', 
+    usecols=['user_id', 'movie_id', 'rating', 'timestamp']
+)
 
+client = MongoClient("mongodb://root:root@mongo:27017/")
+db = client["movie_database"]
 
-# db = client['db']
+movies_collection = db["movies"]
+movies_data = df_movies.to_dict(orient='records')
+movies_collection.insert_many(movies_data)
+
+ratings_collection = db["ratings"]
+ratings_data = df_ratings.to_dict(orient='records')
+ratings_collection.insert_many(ratings_data)
+
+print("Data inserted successfully!")
 
