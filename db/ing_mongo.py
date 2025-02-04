@@ -24,4 +24,3 @@ ratings_data = df_ratings.to_dict(orient='records')
 ratings_collection.insert_many(ratings_data)
 
 print("Data inserted successfully!")
-
