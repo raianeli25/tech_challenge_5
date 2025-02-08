@@ -10,7 +10,7 @@ app = FastAPI()
 def route_default():
     return 'Welcome to API'
 
-@app.get('/get_data_into_db')
+@app.post('/get_data_into_db')
 def get_data_into_db(db_name):
     db = MongoDBConn()
     df = function_test()

@@ -6,4 +6,4 @@ scikit-surprise
 scikit-learn
 mlflow
 seaborn
-lightfm
+git+https://github.com/daviddavo/lightfm
