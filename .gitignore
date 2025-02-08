@@ -7,6 +7,10 @@ __pycache__/
 # Mongo
 data/
 
+# Data
+model/files/itens/*
+model/files/treino/*
+
 # C extensions
 *.so
 

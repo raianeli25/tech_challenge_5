@@ -33,11 +33,12 @@ services:
       - data_network
   fastapi:
     build:
-      context: ./api
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: ./api/Dockerfile
     container_name: fastapi
     volumes:
       - ./api:/app
+      - ./model:/app/model
     depends_on:
       - mongo
     environment:
