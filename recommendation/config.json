@@ -1,7 +1,7 @@
 {
-    "FPATH_TRAIN" : "../data/train_reduced/*.csv",
-    "FPATH_ITEMS" : "../data/items_reduced/*.csv",
-    "TREATED_TRAIN_CSV" : "../data/treated_reduced/full_training_data.csv",
+    "FPATH_TRAIN" : "../data/train/*.csv",
+    "FPATH_ITEMS" : "../data/items/*.csv",
+    "TREATED_TRAIN_CSV" : "../data/treated/full_training_data.csv",
     "TREATED_ITEMS_CSV" : "../data/treated/full_items.csv",
     "DF_ITEMS_CLUSTERED_FEATURES_ADJ" : "../data/treated/items_df_clustered_features_adj.csv",
     "VALID_DF" : "../data/valid/validacao.csv"

@@ -6,7 +6,7 @@ from typing import Any
 # Load Portuguese model
 nlp = spacy.load("pt_core_news_sm")
 
-def read_all_csvs_into_pandas(fpath:str)->pd.DataFrame:
+def read_all_csvs_into_pandas(fpath:str, dtype:dict)->pd.DataFrame:
     """
     This function reads all CSVs contained into a given directory represented by string "fpath".
     CSVs in subfolders are NOT read.
@@ -20,7 +20,7 @@ def read_all_csvs_into_pandas(fpath:str)->pd.DataFrame:
 
     # Loop through each CSV file and append its contents to the combined dataframe
     for csv_file in csv_files:
-        df = pd.read_csv(csv_file)
+        df = pd.read_csv(csv_file, dtype=dtype)
         df_combined = pd.concat([df_combined, df]).reset_index(drop=True)
     
     return df_combined
