@@ -3,6 +3,7 @@
     "FPATH_ITEMS" : "../data/items/*.csv",
     "TREATED_TRAIN_CSV" : "../data/treated/full_training_data.csv",
     "TREATED_ITEMS_CSV" : "../data/treated/full_items.csv",
+    "DF_TRAIN_CLEANED_CSV" : "../data/treated/full_cleaned_training_data.csv",
     "DF_ITEMS_FEATURE" : "../data/treated/full_items_features.csv",
     "VALID_DF" : "../data/valid/validacao.csv"
 }
