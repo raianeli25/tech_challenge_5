@@ -4,6 +4,13 @@ __pycache__
 *$py.class
 *.csv
 
+# Mongo
+data/
+
+# Data
+model/files/itens/*
+model/files/treino/*
+
 # C extensions
 *.so
 
