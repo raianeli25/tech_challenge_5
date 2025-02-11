@@ -2,7 +2,6 @@ import os
 import pandas as pd
 from fastapi import FastAPI
 from utils.db_conn import MongoDBConn
-from models.models_recommendation import UserType
 from utils.recommendation import sample_recommendation
 import pickle
 
