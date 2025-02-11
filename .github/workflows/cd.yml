@@ -21,7 +21,7 @@ jobs:
 
     - name: Set up SSH key
       run: |
-        mkdir ~/.ssh
+        mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         # Ensure the known_hosts file is updated correctly
