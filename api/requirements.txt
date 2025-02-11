@@ -7,3 +7,4 @@ scikit-learn
 mlflow
 seaborn
 scipy
+git+https://github.com/daviddavo/lightfm
