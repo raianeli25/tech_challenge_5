@@ -22,10 +22,6 @@ jobs:
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts || echo "SSH keyscan failed"
         echo "StrictHostKeyChecking no" >> ~/.ssh/config  # Disable host checking
 
-    - name: Create directory on EC2
-      run: |
-        ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} "mkdir -p /home/ubuntu/src"
-
     - name: Copy files to EC2
       run: |
         scp -r * ec2-user@${{ secrets.EC2_HOST }}:/home/ubuntu/src
