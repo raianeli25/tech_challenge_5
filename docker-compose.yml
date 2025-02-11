@@ -1,5 +1,3 @@
-version: '1.0.0'
-
 services:
   mongo:
     image: mongo
@@ -39,6 +37,7 @@ services:
     volumes:
       - ./api:/app
       - ./model:/app/model
+      - ./data:/app/data
     depends_on:
       - mongo
     environment:

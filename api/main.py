@@ -1,5 +1,5 @@
 import os
-
+import pandas as pd
 from fastapi import FastAPI
 from utils.db_conn import MongoDBConn
 from model.data_treatment import function_test
@@ -10,10 +10,11 @@ app = FastAPI()
 def route_default():
     return 'Welcome to API'
 
-@app.post('/get_data_into_db')
-def get_data_into_db(db_name):
+@app.post('/post_data_into_db')
+def post_data_into_db(data_path):
     db = MongoDBConn()
-    df = function_test()
+    df = pd.read_csv(data_path)
+    db_name = data_path.split('/')[-1].split('.')[0]
     if df.bool:
         db.insert_data(db_name, df)
         return 'Sucesso'
