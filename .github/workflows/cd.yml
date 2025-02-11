@@ -13,12 +13,6 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: Debug EC2 Host Connectivity
-      run: |
-        echo "Checking EC2 Host: ${{ secrets.EC2_HOST }}"
-        ping -c 4 ${{ secrets.EC2_HOST }} || echo "EC2 is unreachable"
-        nslookup ${{ secrets.EC2_HOST }} || echo "DNS resolution failed"
-
     - name: Set up SSH key
       run: |
         mkdir -p ~/.ssh
@@ -27,6 +21,10 @@ jobs:
         # Ensure the known_hosts file is updated correctly
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts || echo "SSH keyscan failed"
         echo "StrictHostKeyChecking no" >> ~/.ssh/config  # Disable host checking
+
+    - name: Create directory on EC2
+      run: |
+        ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} "mkdir -p /home/ubuntu/src"
 
     - name: Copy files to EC2
       run: |
