@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main  # Deploy on push to main
+      - main  # Trigger deployment when pushing to main
 
 jobs:
   deploy:
@@ -13,21 +13,29 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
+    - name: Debug EC2 Host Connectivity
+      run: |
+        echo "Checking EC2 Host: ${{ secrets.EC2_HOST }}"
+        ping -c 4 ${{ secrets.EC2_HOST }} || echo "EC2 is unreachable"
+        nslookup ${{ secrets.EC2_HOST }} || echo "DNS resolution failed"
+
     - name: Set up SSH key
       run: |
-        mkdir -p ~/.ssh
+        mkdir ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+        # Ensure the known_hosts file is updated correctly
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts || echo "SSH keyscan failed"
+        echo "StrictHostKeyChecking no" >> ~/.ssh/config  # Disable host checking
 
     - name: Copy files to EC2
       run: |
-        scp -r * ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/app
+        scp -r * ec2-user@${{ secrets.EC2_HOST }}:/home/ubuntu/src
 
     - name: Deploy with Docker Compose
       run: |
-        ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-        cd /home/ubuntu/app
+        ssh ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+        cd /home/ubuntu/src
         docker-compose down
         docker-compose pull
         docker-compose up -d --build
