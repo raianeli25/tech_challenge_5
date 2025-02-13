@@ -38,20 +38,6 @@ jobs:
           echo "Public IP: $PUBLIC_IP"
           echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_ENV
 
-      - name: Open ports 8000, 8081, and 8501 in Security Group
-        run: |
-          aws ec2 authorize-security-group-ingress \
-            --group-id ${{ secrets.EC2_SECURITY_GROUP_ID }} \
-            --protocol tcp --port 8000 --cidr 0.0.0.0/0
-
-          aws ec2 authorize-security-group-ingress \
-            --group-id ${{ secrets.EC2_SECURITY_GROUP_ID }} \
-            --protocol tcp --port 8081 --cidr 0.0.0.0/0
-
-          aws ec2 authorize-security-group-ingress \
-            --group-id ${{ secrets.EC2_SECURITY_GROUP_ID }} \
-            --protocol tcp --port 8501 --cidr 0.0.0.0/0
-
       - name: Wait for EC2 to be Ready
         run: sleep 60  # Wait for EC2 instance to be initialized
 
