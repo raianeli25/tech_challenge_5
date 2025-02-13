@@ -23,14 +23,7 @@ jobs:
       - name: Launch EC2 Instance
         id: ec2
         run: |
-          INSTANCE_ID=$(aws ec2 run-instances \
-            --image-id ami-085ad6ae776d8f09c \  # Replace with your AMI ID
-            --count 1 \
-            --instance-type t2.2xlarge \
-            --key-name ${{ secrets.EC2_KEY_NAME }} \
-            --security-groups ${{ secrets.EC2_SECURITY_GROUP }} \
-            --query 'Instances[0].InstanceId' \
-            --output text)
+          INSTANCE_ID=$(aws ec2 run-instances --image-id ami-085ad6ae776d8f09c --count 1 --instance-type t2.2xlarge --key-name ${{ secrets.EC2_KEY_NAME }} --security-groups ${{ secrets.EC2_SECURITY_GROUP }} --query 'Instances[0].InstanceId' --output text)
 
           echo "EC2 instance $INSTANCE_ID created"
           echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
@@ -81,11 +74,11 @@ jobs:
 
       - name: Copy files to EC2
         run: |
-          scp -r * ubuntu@$PUBLIC_IP:/home/ubuntu/src
+          scp -r * ec2-user@$PUBLIC_IP:/home/ubuntu/src
 
       - name: Deploy with Docker Compose
         run: |
-          ssh ubuntu@$PUBLIC_IP << 'EOF'
+          ssh ec2-user@$PUBLIC_IP << 'EOF'
           cd /home/ubuntu/src
           docker-compose down
           docker-compose pull
