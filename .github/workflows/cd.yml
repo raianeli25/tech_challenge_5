@@ -57,8 +57,8 @@ jobs:
       - name: Install Docker compose
         run: |
           ssh ec2-user@$PUBLIC_IP << 'EOF'
-          sudo apt update -y
-          sudo apt install -y docker.io docker-compose
+          sudo yum update -y
+          sudo yum install -y docker.io docker-compose
           sudo systemctl start docker
           sudo systemctl enable docker      
 
