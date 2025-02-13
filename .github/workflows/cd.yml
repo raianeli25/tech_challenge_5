@@ -39,7 +39,7 @@ jobs:
           echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_ENV
 
       - name: Wait for EC2 to be Ready
-        run: sleep 60  # Wait for EC2 instance to be initialized
+        run: sleep 300  # Wait for EC2 instance to be initialized
 
       - name: Install Docker compose
         run: |
