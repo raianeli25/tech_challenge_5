@@ -54,13 +54,15 @@ jobs:
         run: |
           scp -r * ec2-user@$PUBLIC_IP:/home/ec2-user/src
 
-      - name: Install Docker compose
+      - name: Install Docker and Docker Compose
         run: |
           ssh ec2-user@$PUBLIC_IP << 'EOF'
           sudo yum update -y
-          sudo yum install -y docker.io docker-compose
-          sudo systemctl start docker
-          sudo systemctl enable docker      
+          sudo yum install -y docker
+          sudo systemctl enable docker
+          sudo systemctl start docker      
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
 
       - name: Deploy with Docker Compose
         run: |
