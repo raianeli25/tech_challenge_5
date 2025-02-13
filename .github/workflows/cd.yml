@@ -23,7 +23,7 @@ jobs:
       - name: Launch EC2 Instance
         id: ec2
         run: |
-          INSTANCE_ID=$(aws ec2 run-instances --image-id ami-085ad6ae776d8f09c --count 1 --instance-type t2.2xlarge --key-name ${{ secrets.EC2_KEY_NAME }} --security-groups ${{ secrets.EC2_SECURITY_GROUP }} --query 'Instances[0].InstanceId' --output text)
+          INSTANCE_ID=$(aws ec2 run-instances --image-id ami-085ad6ae776d8f09c --count 1 --instance-type t2.2xlarge --key-name ${{ secrets.EC2_KEY_NAME }} --security-groups ${{ secrets.EC2_SECURITY_GROUP }} --block-device-mappings '[{"DeviceName": "/dev/xvda","Ebs":{"VolumeSize":16}}]' --query 'Instances[0].InstanceId' --output text)
 
           echo "EC2 instance $INSTANCE_ID created"
           echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
