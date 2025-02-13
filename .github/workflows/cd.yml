@@ -1,9 +1,9 @@
-name: Deploy to EC2 with Docker Compose
+name: Deploy to EC2
 
 on:
   push:
     branches:
-      - main  # Trigger deployment on push to main branch
+      - main  # Trigger deployment when pushing to main
 
 jobs:
   deploy:
@@ -70,26 +70,26 @@ jobs:
             sudo systemctl start docker
             sudo systemctl enable docker
 
-    - name: Set up SSH key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        # Ensure the known_hosts file is updated correctly
-        ssh-keyscan -H $PUBLIC_IP >> ~/.ssh/known_hosts || echo "SSH keyscan failed"
-        echo "StrictHostKeyChecking no" >> ~/.ssh/config  # Disable host checking
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          # Ensure the known_hosts file is updated correctly
+          ssh-keyscan -H $PUBLIC_IP >> ~/.ssh/known_hosts || echo "SSH keyscan failed"
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config  # Disable host checking
 
-    - name: Copy files to EC2
-      run: |
-        scp -r * ubuntu@$PUBLIC_IP:/home/ubuntu/src
+      - name: Copy files to EC2
+        run: |
+          scp -r * ubuntu@$PUBLIC_IP:/home/ubuntu/src
 
-    - name: Deploy with Docker Compose
-      run: |
-        ssh ubuntu@$PUBLIC_IP << 'EOF'
-        cd /home/ubuntu/src
-        docker-compose down
-        docker-compose pull
-        docker-compose up -d --build
+      - name: Deploy with Docker Compose
+        run: |
+          ssh ubuntu@$PUBLIC_IP << 'EOF'
+          cd /home/ubuntu/src
+          docker-compose down
+          docker-compose pull
+          docker-compose up -d --build
 
       - name: Output Deployment Info
         run: echo "App deployed on EC2 at http://$PUBLIC_IP:8501"
