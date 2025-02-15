@@ -25,20 +25,27 @@ def read_all_csvs_into_pandas(fpath:str, dtype:dict)->pd.DataFrame:
     
     return df_combined
 
-def transform_text_to_list(hist:str)->list[str]:
+def transform_text_to_list(hist:str|list)->list[str]:
     """
     This function substitutes potential breakers, such as "\n" and "," by blank spaces.
     Also, it removes leading/trailing spaces with strip.
     Finally, the strings separated by spaces are split into elements of a list.
     Example: the string "76, 38, 41" is converted into a list ["76", "38", "41"] 
     """
-    return hist.\
+    try:
+        result = hist.\
         replace('\n', ' ').\
         replace("'", ' ').\
         replace("[", ' ').\
         replace("]", ' ').\
         replace(",", ' ').\
         strip().split()
+    except:
+        if isinstance(hist,list):
+            result = hist
+        else:
+            raise ValueError("hist is either list or str.")
+    return result
 
 def convert_type_of_all_list(l:list, dtype=int)->list[Any]:
     """
