@@ -6,7 +6,7 @@ from typing import Any
 # Load Portuguese model
 nlp = spacy.load("pt_core_news_sm")
 
-def read_all_csvs_into_pandas(fpath:str)->pd.DataFrame:
+def read_all_csvs_into_pandas(fpath:str, dtype:dict)->pd.DataFrame:
     """
     This function reads all CSVs contained into a given directory represented by string "fpath".
     CSVs in subfolders are NOT read.
@@ -20,25 +20,32 @@ def read_all_csvs_into_pandas(fpath:str)->pd.DataFrame:
 
     # Loop through each CSV file and append its contents to the combined dataframe
     for csv_file in csv_files:
-        df = pd.read_csv(csv_file)
+        df = pd.read_csv(csv_file, dtype=dtype)
         df_combined = pd.concat([df_combined, df]).reset_index(drop=True)
     
     return df_combined
 
-def transform_text_to_list(hist:str)->list[str]:
+def transform_text_to_list(hist:str|list)->list[str]:
     """
     This function substitutes potential breakers, such as "\n" and "," by blank spaces.
     Also, it removes leading/trailing spaces with strip.
     Finally, the strings separated by spaces are split into elements of a list.
     Example: the string "76, 38, 41" is converted into a list ["76", "38", "41"] 
     """
-    return hist.\
+    try:
+        result = hist.\
         replace('\n', ' ').\
         replace("'", ' ').\
         replace("[", ' ').\
         replace("]", ' ').\
         replace(",", ' ').\
         strip().split()
+    except:
+        if isinstance(hist,list):
+            result = hist
+        else:
+            raise ValueError("hist is either list or str.")
+    return result
 
 def convert_type_of_all_list(l:list, dtype=int)->list[Any]:
     """
