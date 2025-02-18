@@ -1,1 +1,11 @@
 pytest
+fastapi==0.115.0
+uvicorn==0.31.0
+pymongo==4.8.0
+pandas==2.2.2
+scikit-surprise
+scikit-learn
+mlflow
+seaborn
+scipy
+git+https://github.com/daviddavo/lightfm
