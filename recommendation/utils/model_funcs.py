@@ -8,6 +8,9 @@ from scipy import sparse
 from lightfm import LightFM
 
 from utils.custom_data_structs import UserItemData
+from ...api.utils.db_conn import MongoDBConn
+
+db = MongoDBConn()
 
 SEED = 42
 K_LIGHTFM_ITEMS = 6
@@ -158,3 +161,13 @@ def list_intersection(list1:list, list2:list)->list:
     Then, the return is ['c', 'd']
     """
     return list(set(list1) & set(list2))
+
+def get_titles_from_ids(item_ids_list:list, db_name:str="noticias_final_v2")->list:
+    """
+    Given a list item_ids_list, get the respective titles from database "db".
+    """
+    recommendation = []
+    for item_id in item_ids_list:
+        item = db.get_item_by_id(db_name,item_id)
+        recommendation.append(item['title'])
+    return recommendation
