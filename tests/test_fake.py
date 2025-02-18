@@ -1,7 +1,7 @@
 import pytest
 
 def fake_function():
-    return "Hello, Pytest!"
+    return "Hello world!"
 
 def test_fake_function():
-    assert fake_function() == "Hello, Pytest!"
+    assert fake_function() == "Hello world!"
