@@ -20,6 +20,11 @@ random.seed(SEED)
 loaded_user_item_data:UserItemData = pickle.load(open('artifacts/user_item_data.pkl', 'rb'))
 loaded_n_users, loaded_n_items = loaded_user_item_data.interactions_shape
 
+def get_user_item_data() -> UserItemData:
+      return loaded_user_item_data
+
+
+
 def format_newuser_input(user_feature_map, user_feature_list):
 	normalised_val = 1.0 
 	target_indices = []
