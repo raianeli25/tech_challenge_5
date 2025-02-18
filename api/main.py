@@ -1,18 +1,17 @@
-import os
+import pickle
 import pandas as pd
 from fastapi import FastAPI
+
 from utils.db_conn import MongoDBConn
-from utils.recommendation import sample_recommendation
-import pickle
+from utils.custom_data_structs import UserItemData
+from utils.model_funcs import recommend_by_model_scores, get_user_item_data
 
 app = FastAPI()
 
 db = MongoDBConn()
 
 loaded_model = pickle.load(open('artifacts/lightfm_model.pkl', 'rb'))
-loaded_user_id_map = pickle.load(open('artifacts/user_id_map.pkl', 'rb'))
-loaded_item_id_map_reverse = pickle.load(open('artifacts/item_id_map_reverse.pkl', 'rb'))
-loaded_user_feature_map = pickle.load(open('artifacts/user_feature_map.pkl', 'rb'))
+loaded_user_item_data:UserItemData = get_user_item_data()
 
 @app.get('/')
 def route_default():
@@ -31,5 +30,5 @@ def post_data_into_db(data_path):
 @app.post('/recommendation')
 def get_recommendation(user_hash):
 
-    return sample_recommendation(user_hash,loaded_item_id_map_reverse,loaded_user_feature_map,loaded_user_id_map,loaded_model)
+    return recommend_by_model_scores(user_hash,loaded_user_item_data,loaded_model)
     
