@@ -15,7 +15,11 @@ from utils.custom_data_structs import UserItemData
 SEED = 42
 K_LIGHTFM_ITEMS = 6
 K_POPULAR_ITEMS = 6
+K_UNPOPULAR_ITEMS = 1000
 K_SAMPLED_ITEMS = 3
+
+COUNT_TO_ABANDON_THRESHOLD = 5
+FRESHNESS_THRESHOLD = 0.9
 
 random.seed(SEED)
 
@@ -98,18 +102,27 @@ def recommend_by_model_scores(user_hash:str,user_item_data:UserItemData,model:Li
 
 
 
-def count_histories_by_popularity(df:pd.DataFrame, item_column:str="history")->pd.DataFrame:
+def count_histories_by_popularity(df:pd.DataFrame, 
+                                  item_column:str="history", 
+                                  sort_by_column:str="historyFreshnessNormalized")->pd.Series:
     """
     This function receives a dataframe containing the item_column
     and returns the number of occurences of such item in the dataset.
     Also, the counts are ordered descending (greater first).
     """
     
-    return df.groupby([item_column]).size().sort_values(ascending=False).astype(dtype="UInt16")
+    return df.groupby([item_column,sort_by_column]).size().sort_values(ascending=False).astype(dtype="UInt16").to_frame(name="counts").reset_index()
 
 
+def get_dict_most_popular_histories(df_count_histories:pd.DataFrame, k_pop_items:int=K_POPULAR_ITEMS)->dict:
+    """
+    Considering an ordered (descending) dataset, 
+    recommends the k_pop_items rows with most counts.
+    """
+    return df_count_histories.iloc[:k_pop_items].to_dict()
 
-def get_df_most_popular_histories(df_count_histories:pd.DataFrame, k_pop_items:int=K_POPULAR_ITEMS)->pd.DataFrame:
+
+def get_df_most_popular_histories(df_count_histories:pd.DataFrame, k_pop_items:int)->pd.DataFrame:
     """
     Considering an ordered (descending) dataset, 
     recommends the k_pop_items rows with most counts.
@@ -128,26 +141,65 @@ def get_df_most_unpopular_histories(df_count_histories:pd.DataFrame, k_pop_items
 
 
 
-def recommend_by_most_popular(df:pd.DataFrame)->list:
+def recommend_by_most_popular(df:pd.DataFrame,k_pop_items:int=K_POPULAR_ITEMS)->list:
     """
     This function is a wrapper to get most popular items.
     """
     df_count_histories = count_histories_by_popularity(df)
-    df_popular_stories = get_df_most_popular_histories(df_count_histories)
+    df_popular_stories = get_df_most_popular_histories(df_count_histories,k_pop_items)
     return list(set(df_popular_stories.keys()))
 
 
 
-def recommend_by_weighted_random(df_unpopular_histories:pd.DataFrame, unpopular_weights:list, k_sample_items:int=K_SAMPLED_ITEMS)->list:
+def recommend_by_weighted_random_old(df_unpopular_histories:pd.DataFrame, unpopular_weights:list, k_sample_items:int=K_SAMPLED_ITEMS)->list:
     """
     This function will select randomly `k_sample_items` from `df_unpopular_histories`.
     The probability of an item to be selected is proportional to `unpopular_weights`.
     Thus, most popular items have more probability to be selected (by not guarantees -> random!)
     """
     random_k_histories = df_unpopular_histories.sample(n=k_sample_items, weights=unpopular_weights, random_state=random.randint(0, 50))
-    # return random_k_histories
     return list(set(random_k_histories.keys()))
 
+
+
+def filter_old_and_abandoned_histories(df_unpopular:pd.DataFrame)->list:
+    """
+    This function will select randomly `k_sample_items` from `df_unpopular_histories`.
+    The probability of an item to be selected is proportional to `unpopular_weights`.
+    Thus, most popular items have more probability to be selected (by not guarantees -> random!)
+    """
+    df_unpopular = df_unpopular[df_unpopular["counts"] > COUNT_TO_ABANDON_THRESHOLD]
+    return df_unpopular[df_unpopular["historyFreshnessNormalized"] > FRESHNESS_THRESHOLD]
+
+
+def get_df_random_histories(df_count_histories:pd.DataFrame, k_sample_items:int=K_UNPOPULAR_ITEMS)->list:
+    """
+    This function will select randomly `k_sample_items` from `df_unpopular_histories`.
+    The probability of an item to be selected is proportional to `unpopular_weights`.
+    Thus, most popular items have more probability to be selected (by not guarantees -> random!)
+    """
+    df_unpopular = get_df_most_unpopular_histories(df_count_histories, k_sample_items)
+    df_random = filter_old_and_abandoned_histories(df_unpopular)
+    return df_random.sample(k_sample_items,weights=df_count_histories["counts"],random_state=SEED)
+
+
+def get_dict_random_histories(df_random:pd.DataFrame)->dict:
+    """
+    Considering an ordered (descending) dataset, 
+    recommends the k_pop_items rows with most counts.
+    """
+    return df_random.to_dict()
+
+
+def read_popular_dict_into_list(populars:dict):
+
+    return list(populars.values())
+
+
+def read_random_dict_into_list(randoms_dict:dict):
+
+    random_history_list = list(randoms_dict.values())
+    return random.sample(random_history_list,K_SAMPLED_ITEMS)
 
 
 def list_intersection(list1:list, list2:list)->list:
@@ -160,6 +212,8 @@ def list_intersection(list1:list, list2:list)->list:
     """
     return list(set(list1) & set(list2))
 
+
+## !! AQUI !! ONLY RECOMMENDATION BY SCORES - NEED TO ADD POPULATIRY AND RANDOM!
 
 
 # def get_titles_from_ids(item_ids_list:list, db_name:str="noticias_final_v2")->list:

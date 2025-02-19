@@ -29,6 +29,6 @@ def post_data_into_db(data_path):
 
 @app.post('/recommendation')
 def get_recommendation(user_hash):
-
+    ## !! AQUI !! ONLY RECOMMENDATION BY SCORES - NEED TO ADD POPULATIRY AND RANDOM!
     return recommend_by_model_scores(user_hash,loaded_user_item_data,loaded_model)
     

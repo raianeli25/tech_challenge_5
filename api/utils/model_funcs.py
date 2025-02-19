@@ -160,6 +160,10 @@ def list_intersection(list1:list, list2:list)->list:
     """
     return list(set(list1) & set(list2))
 
+
+## !! AQUI !! ONLY RECOMMENDATION BY SCORES - NEED TO ADD POPULATIRY AND RANDOM!
+
+
 def get_titles_from_ids(item_ids_list:list, db_name:str="noticias_final_v2")->list:
     """
     Given a list item_ids_list, get the respective titles from database "db".
