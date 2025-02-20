@@ -69,7 +69,7 @@ def get_scores_from_model(user_hash:str,user_item_data:UserItemData,model:LightF
 
 
 
-def get_top_items_by_model_scores(scores:np.NDArray[int], user_item_data:UserItemData)->list:
+def get_top_items_by_model_scores(scores:np.ndarray, user_item_data:UserItemData)->list:
     """
     The top K_LIGHTFM_ITEMS recommendations from the list are returned.
     """
