@@ -1,4 +1,7 @@
 class UserItemData():
+    """
+    This class aggregates a bunch of data structures used by the LightFM model
+    """
     def __init__(self, 
                  user_id_map:dict = None, 
                  item_id_map:dict = None, 
