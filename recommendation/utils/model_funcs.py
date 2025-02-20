@@ -8,32 +8,18 @@ from scipy import sparse
 from lightfm import LightFM
 
 from utils.custom_data_structs import UserItemData
-# from ...api.utils.db_conn import MongoDBConn
 
-# db = MongoDBConn()
 
 SEED = 42
-K_LIGHTFM_ITEMS = 6
-K_POPULAR_ITEMS = 6
+K_LIGHTFM_ITEMS = 7
+K_POPULAR_ITEMS = 7
 K_UNPOPULAR_ITEMS = 1000
-K_SAMPLED_ITEMS = 3
+K_SAMPLED_ITEMS = 6
 
-COUNT_TO_ABANDON_THRESHOLD = 5
-FRESHNESS_THRESHOLD = 0.9
+COUNT_TO_ABANDON_THRESHOLD = 15
+FRESHNESS_THRESHOLD = 0.95
 
 random.seed(SEED)
-
-loaded_user_item_data:UserItemData = pickle.load(open('artifacts/user_item_data.pkl', 'rb'))
-loaded_n_users, loaded_n_items = loaded_user_item_data.interactions_shape
-
-
-def get_user_item_data() -> UserItemData:
-    """
-    Simple get function to return "loaded_user_item_data", 
-    loaded from pickle file.
-    """  
-    return loaded_user_item_data
-
 
 
 def format_newuser_input(user_feature_map:dict, user_feature_list:list)->sparse.csr_matrix:
@@ -67,16 +53,30 @@ def get_scores_from_model(user_hash:str,user_item_data:UserItemData,model:LightF
     This function receives a user_hash and generates a full array of scores for recommendation.
     The scores array have size equal to `loaded_n_items`, i.e., the number of items used for training.
     """
-
+    
     # try to recommend for known users
     try:
+        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
+            print("try")
         user_x = user_item_data.user_id_map[user_hash]
-        scores = model.predict(user_x, np.arange(loaded_n_items))
+        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
+            print(f"{user_x}")
+        scores = model.predict(user_x, np.arange(user_item_data.interactions_shape[1]))
+        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
+            print(f"{scores}")
     # recommend for new/unknown user
     except:
+        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
+            print("except")
+            print(f"{user_hash}")
         user_feature_list = ['Non-Logged']
         new_user_features = format_newuser_input(user_item_data.user_feature_map, user_feature_list)
-        scores = model.predict(0, np.arange(loaded_n_items), user_features=new_user_features)
+        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
+            print(f"{new_user_features}")
+        scores = model.predict(0, np.arange(user_item_data.interactions_shape[1]), user_features=new_user_features)
+        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
+            print(f"{scores}")
+    
     return scores
 
 
@@ -99,6 +99,12 @@ def recommend_by_model_scores(user_hash:str,user_item_data:UserItemData,model:Li
     
     scores = get_scores_from_model(user_hash,user_item_data,model)
     return get_top_items_by_model_scores(scores, user_item_data)
+    # if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
+    #         print(f"{scores}")
+    # top_k = get_top_items_by_model_scores(scores, user_item_data)
+    # if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
+    #         print(f"{top_k}")
+    # return top_k
 
 
 
@@ -211,17 +217,3 @@ def list_intersection(list1:list, list2:list)->list:
     Then, the return is ['c', 'd']
     """
     return list(set(list1) & set(list2))
-
-
-## !! AQUI !! ONLY RECOMMENDATION BY SCORES - NEED TO ADD POPULATIRY AND RANDOM!
-
-
-# def get_titles_from_ids(item_ids_list:list, db_name:str="noticias_final_v2")->list:
-#     """
-#     Given a list item_ids_list, get the respective titles from database "db".
-#     """
-#     recommendation = []
-#     for item_id in item_ids_list:
-#         item = db.get_item_by_id(db_name,item_id)
-#         recommendation.append(item['title'])
-#     return recommendation
