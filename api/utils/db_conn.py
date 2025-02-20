@@ -29,4 +29,14 @@ class MongoDBConn:
         except Exception as e:
             print("Error:", e)
             return None
+        
+    def get_titles_by_item_ids(self, item_ids_list:list, db_name:str="full_items")->list:
+        """
+        Given a list item_ids_list, get the respective titles from database "db".
+        """
+        recommendation = []
+        for item_id in item_ids_list:
+            item = self.get_item_by_id(db_name,item_id)
+            recommendation.append(item['title'])
+        return recommendation
 
