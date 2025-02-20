@@ -115,7 +115,7 @@ Diagrama explicativo do workflow de CI/CD para deploy em nuvem.
 
 <br>
 
-Na abertura do PR, a pipeline de CI executa e roda o pytest para garantir que o código não irá subir quebrado para produção. Ao realizar o merge para a branch main a pipeline de CD é executada, criando uma instância EC2 e realizando o deploy do código nessa instância. Ao final da execução desta pipeline, é fornecido o link para acesso a interface do streamlit.
+Na abertura do PR a pipeline de CI executa e roda o pytest para garantir que o código não irá subir quebrado para produção. Ao realizar o merge para a branch main a pipeline de CD é executada, criando uma instância EC2 e realizando o deploy do código nessa instância. Ao final da execução desta pipeline, é fornecido o link para acesso a interface do streamlit.
 
 <br>
 
