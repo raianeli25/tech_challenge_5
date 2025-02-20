@@ -56,27 +56,13 @@ def get_scores_from_model(user_hash:str,user_item_data:UserItemData,model:LightF
     
     # try to recommend for known users
     try:
-        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-            print("try")
         user_x = user_item_data.user_id_map[user_hash]
-        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-            print(f"{user_x}")
         scores = model.predict(user_x, np.arange(user_item_data.interactions_shape[1]))
-        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-            print(f"{scores}")
     # recommend for new/unknown user
     except:
-        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-            print("except")
-            print(f"{user_hash}")
         user_feature_list = ['Non-Logged']
         new_user_features = format_newuser_input(user_item_data.user_feature_map, user_feature_list)
-        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-            print(f"{new_user_features}")
         scores = model.predict(0, np.arange(user_item_data.interactions_shape[1]), user_features=new_user_features)
-        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-            print(f"{scores}")
-    
     return scores
 
 
