@@ -1,5 +1,7 @@
 ## Tech Challenge #5 **🧩**
 
+<br>
+
 🎯Objetivo: Construção de um sistema de recomendação de notícias baseado em dados do G1 (Globo).
 
 ### **Tecnologias utilizadas 💡**
