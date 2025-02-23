@@ -176,14 +176,14 @@ def read_popular_dict_into_list(populars:dict)->list:
     return list(populars.values())
 
 
-def read_random_dict_into_list(randoms_dict:dict)->list:
+def read_random_dict_into_list(randoms_dict:dict, k_sampled_items:int=K_SAMPLED_ITEMS)->list:
     """
     Firstly, gets the list of item_ids based on its dictionary.
     Then, select randomly K_SAMPLED_ITEMS out of K_UNPOPULAR_ITEMS (also randomly obtained)
     The random K_SAMPLED_ITEMS are returned as a list
     """
     random_history_list = list(randoms_dict.values())
-    return random.sample(random_history_list,K_SAMPLED_ITEMS)
+    return random.sample(random_history_list,k_sampled_items)
 
 
 def list_intersection(list1:list, list2:list)->list:
