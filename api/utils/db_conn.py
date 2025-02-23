@@ -22,7 +22,7 @@ class MongoDBConn:
         return self.client[db_name]
     
     def drop_database(self, db_name):
-        return self.client.drop_database(db_name)
+        self.client.drop_database(db_name)
     
     def get_item_by_id(self, db_name, item_id):
         db = self.client["db_model"]
