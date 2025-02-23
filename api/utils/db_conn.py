@@ -6,15 +6,25 @@ class MongoDBConn:
         self.client = MongoClient(
             f'mongodb://{username}:{password}@{host}:{port}/?authSource={authSource}'
         )
-        
+
     def insert_data(self, db_name: str, df):
-        db = self.client["db_model"]
+
+        if db_name == 'test_data':
+            db = self.client["db_test"]
+        else:
+            db = self.client["db_model"]
         db_collect = db[db_name]
         df['_id'] = df['page'] 
         data = df.to_dict(orient='records')
         db_collect.insert_many(data)
     
-    def get_item_by_id(self,db_name,item_id):
+    def get_database(self, db_name):
+        return self.client[db_name]
+    
+    def drop_database(self, db_name):
+        return self.client.drop_database(db_name)
+    
+    def get_item_by_id(self, db_name, item_id):
         db = self.client["db_model"]
         collection = db[db_name]
         try:
