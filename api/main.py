@@ -5,7 +5,6 @@ from fastapi import FastAPI
 from utils.db_conn import MongoDBConn
 from utils.custom_data_structs import UserItemData
 from utils.model_funcs import recommend_by_model_scores, read_popular_dict_into_list, read_random_dict_into_list
-from utils.db_funcs import get_titles_from_ids
 
 import __main__
 def getImages(d): return##
@@ -52,7 +51,7 @@ def get_recommendation(user_hash):
     random_k_histories = read_random_dict_into_list(loaded_dict_random_histories["history"])
     model_histories = recommend_by_model_scores(user_hash,loaded_user_item_data,loaded_model)
     recommendation_list =  model_histories + top_k_popular + random_k_histories
-    return get_titles_from_ids(list(set(recommendation_list)))
+    return db.get_titles_by_item_ids(list(set(recommendation_list)))
 
 
     

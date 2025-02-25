@@ -48,13 +48,7 @@ def transform_text_to_list(hist:str|list)->list[str]:
             raise ValueError("hist is either list or str.")
     return result
 
-def convert_type_of_all_list(l:list, dtype=int)->list[Any]:
-    """
-    This function can be used to change the data type of a given list "l" to dtype.
-    Example: by using convert_type_of_all_list(l, dtype=int) with the list l = ["76", "38", "41"]
-    results in the return [76, 38, 41] (i.e., all str in the list converted to int)
-    """
-    return list(map(dtype,l))
+
 
 def explode_df_columns(df:pd.DataFrame, cols_to_transform:list[str]="history")->pd.DataFrame:
     """
@@ -91,17 +85,6 @@ def check_if_exploded_df_size_is_ok(df:pd.DataFrame, exploded_df:pd.DataFrame)->
     """
     return exploded_df.shape[0] == df["historySize"].sum().item()
 
-def remove_stopwords(text:str):
-    """
-    Preprocess function for removing stopwords
-    """
-    doc = nlp(text.lower())
-    tokens = [token.text for token in doc if token.is_alpha and not token.is_stop]
-    return ' '.join(tokens)
-
-
-
-    
 
 
 def history_check_hifens(text:str)->bool:
@@ -139,18 +122,3 @@ def history_check_hash_format(text:str)->bool:
             history_check_size(text) &
             history_check_chars(text))
 
-
-# mystr = "a1b2c3d4-a1b2-c1d2-e1f2-a111b222c333"
-# print(mystr.split('-'))
-# print(len(mystr.split('-')))
-# print(history_check_hifens(mystr))
-
-# print(mystr.replace(r'-', ''))
-# print(len(mystr.replace(r'-', ''))==32)
-# print(history_check_size(mystr))
-
-# print(re.sub(r'[a-f0-9]', '', mystr))
-# print(len(re.sub(r'[a-f0-9]', '', mystr)))
-# print(history_check_chars(mystr))
-
-# print(history_check_hash_format(mystr))

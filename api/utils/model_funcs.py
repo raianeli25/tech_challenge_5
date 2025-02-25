@@ -11,13 +11,15 @@ from utils.custom_data_structs import UserItemData
 
 
 SEED = 42
-K_LIGHTFM_ITEMS = 7
-K_POPULAR_ITEMS = 7
-K_UNPOPULAR_ITEMS = 1000
-K_SAMPLED_ITEMS = 6
 
-COUNT_TO_ABANDON_THRESHOLD = 15
-FRESHNESS_THRESHOLD = 0.95
+K_LIGHTFM_ITEMS = 7 # NUMBER OF RECOMMENDATIONS FROM LIGHTFM
+K_POPULAR_ITEMS = 7 # NUMBER OF RECOMMENDATIONS BY PURE POPULATIRY
+K_SAMPLED_ITEMS = 6 # NUMBER OF RANDOM (WEIGHTED BY POPULAR) RECOMMENDATIONS
+
+K_UNPOPULAR_ITEMS = 1000 # NUMBER OF RANDOM RECOMMENDATIONS TO BE STORED
+
+COUNT_TO_ABANDON_THRESHOLD = 15 # TO SAMPLE RANDOM RECOMMENDATIONS, DISCARD THOSE WITH POPULARITY BELOW THIS THRESHOLD
+FRESHNESS_THRESHOLD = 0.95 # TO SAMPLE RANDOM RECOMMENDATIONS, DISCARD THOSE WITH FRESHNESS BELOW THIS THRESHOLD
 
 random.seed(SEED)
 
@@ -56,32 +58,18 @@ def get_scores_from_model(user_hash:str,user_item_data:UserItemData,model:LightF
     
     # try to recommend for known users
     try:
-        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-            print("try")
         user_x = user_item_data.user_id_map[user_hash]
-        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-            print(f"{user_x}")
         scores = model.predict(user_x, np.arange(user_item_data.interactions_shape[1]))
-        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-            print(f"{scores}")
     # recommend for new/unknown user
     except:
-        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-            print("except")
-            print(f"{user_hash}")
         user_feature_list = ['Non-Logged']
         new_user_features = format_newuser_input(user_item_data.user_feature_map, user_feature_list)
-        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-            print(f"{new_user_features}")
         scores = model.predict(0, np.arange(user_item_data.interactions_shape[1]), user_features=new_user_features)
-        if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-            print(f"{scores}")
-    
     return scores
 
 
 
-def get_top_items_by_model_scores(scores, user_item_data):
+def get_top_items_by_model_scores(scores:np.ndarray, user_item_data:UserItemData)->list:
     """
     The top K_LIGHTFM_ITEMS recommendations from the list are returned.
     """
@@ -91,7 +79,7 @@ def get_top_items_by_model_scores(scores, user_item_data):
 
 
 
-def recommend_by_model_scores(user_hash:str,user_item_data:UserItemData,model:LightFM):
+def recommend_by_model_scores(user_hash:str,user_item_data:UserItemData,model:LightFM)->list:
     """
     This function is just a wrapper to call both get_scores_from_model()
     and get_top_items_by_model_scores() in sequence.
@@ -99,13 +87,6 @@ def recommend_by_model_scores(user_hash:str,user_item_data:UserItemData,model:Li
     
     scores = get_scores_from_model(user_hash,user_item_data,model)
     return get_top_items_by_model_scores(scores, user_item_data)
-    # if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-    #         print(f"{scores}")
-    # top_k = get_top_items_by_model_scores(scores, user_item_data)
-    # if user_hash == 'fff46e72c87ef6d8e149b0a60f3346a84256b2d30c04bc53261f32cfff8af069':
-    #         print(f"{top_k}")
-    # return top_k
-
 
 
 def count_histories_by_popularity(df:pd.DataFrame, 
@@ -123,7 +104,8 @@ def count_histories_by_popularity(df:pd.DataFrame,
 def get_dict_most_popular_histories(df_count_histories:pd.DataFrame, k_pop_items:int=K_POPULAR_ITEMS)->dict:
     """
     Considering an ordered (descending) dataset, 
-    recommends the k_pop_items rows with most counts.
+    recommends the k_pop_items rows with most counts,
+    and transform the result to dict
     """
     return df_count_histories.iloc[:k_pop_items].to_dict()
 
@@ -157,16 +139,6 @@ def recommend_by_most_popular(df:pd.DataFrame,k_pop_items:int=K_POPULAR_ITEMS)->
 
 
 
-def recommend_by_weighted_random_old(df_unpopular_histories:pd.DataFrame, unpopular_weights:list, k_sample_items:int=K_SAMPLED_ITEMS)->list:
-    """
-    This function will select randomly `k_sample_items` from `df_unpopular_histories`.
-    The probability of an item to be selected is proportional to `unpopular_weights`.
-    Thus, most popular items have more probability to be selected (by not guarantees -> random!)
-    """
-    random_k_histories = df_unpopular_histories.sample(n=k_sample_items, weights=unpopular_weights, random_state=random.randint(0, 50))
-    return list(set(random_k_histories.keys()))
-
-
 
 def filter_old_and_abandoned_histories(df_unpopular:pd.DataFrame)->list:
     """
@@ -182,7 +154,8 @@ def get_df_random_histories(df_count_histories:pd.DataFrame, k_sample_items:int=
     """
     This function will select randomly `k_sample_items` from `df_unpopular_histories`.
     The probability of an item to be selected is proportional to `unpopular_weights`.
-    Thus, most popular items have more probability to be selected (by not guarantees -> random!)
+    Thus, most popular items have more probability to be selected.
+    Also, items with popularity < COUNT_TO_ABANDON_THRESHOLD and freshness [0,1] < FRESHNESS_THRESHOLD 
     """
     df_unpopular = get_df_most_unpopular_histories(df_count_histories, k_sample_items)
     df_random = filter_old_and_abandoned_histories(df_unpopular)
@@ -191,19 +164,24 @@ def get_df_random_histories(df_count_histories:pd.DataFrame, k_sample_items:int=
 
 def get_dict_random_histories(df_random:pd.DataFrame)->dict:
     """
-    Considering an ordered (descending) dataset, 
-    recommends the k_pop_items rows with most counts.
+    Returns the dataframe of random recommendations into dict format.
     """
     return df_random.to_dict()
 
 
-def read_popular_dict_into_list(populars:dict):
-
+def read_popular_dict_into_list(populars:dict)->list:
+    """
+    Returns the list of item_ids based on its dictionary.
+    """
     return list(populars.values())
 
 
-def read_random_dict_into_list(randoms_dict:dict):
-
+def read_random_dict_into_list(randoms_dict:dict)->list:
+    """
+    Firstly, gets the list of item_ids based on its dictionary.
+    Then, select randomly K_SAMPLED_ITEMS out of K_UNPOPULAR_ITEMS (also randomly obtained)
+    The random K_SAMPLED_ITEMS are returned as a list
+    """
     random_history_list = list(randoms_dict.values())
     return random.sample(random_history_list,K_SAMPLED_ITEMS)
 
