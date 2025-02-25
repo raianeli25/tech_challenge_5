@@ -38,18 +38,6 @@ def test_post_data_into_db_no_data(mocker):
     assert response.json()['detail'] == "The CSV file is empty"
 
 @pytest.mark.parametrize("user_hash", ["user_123", "user_456"])
-def test_recommendation_history_hash(mocker, user_hash):
-    mock_recommend = mocker.patch("main.recommend_by_model_scores", return_value=["rec1", "rec2"])
-    mock_read_random = mocker.patch("main.read_random_dict_into_list", return_value=["rand1", "rand2"])
-    
-    response = client.post(f'/recommendation_history_hash?user_hash={user_hash}')
-
-    assert response.status_code == 200
-    assert isinstance(response.json(), list)
-    mock_recommend.assert_called_once_with(user_hash, mocker.ANY, mocker.ANY)
-    mock_read_random.assert_called_once_with(mocker.ANY)
-
-@pytest.mark.parametrize("user_hash", ["user_123", "user_456"])
 def test_recommendation(mocker, user_hash, mock_mongo):
 
     mock_recommend = mocker.patch("main.recommend_by_model_scores", return_value=["rec1", "rec2"])
@@ -65,3 +53,49 @@ def test_recommendation(mocker, user_hash, mock_mongo):
     mock_recommend.assert_called_once_with(user_hash, mocker.ANY, mocker.ANY)
     mock_read_random.assert_called_once_with(mocker.ANY)
     mock_db_conn.assert_called_once()
+
+def test_model_loading_failure(monkeypatch):
+    def mock_pickle_load(*args, **kwargs):
+        raise Exception("Failed to load model")
+
+    monkeypatch.setattr("pickle.load", mock_pickle_load)
+
+    response = client.post(f'/recommendation?user_hash=test_user')
+    
+    assert response.status_code == 500
+    assert "Error generating recommendations" in response.json()["detail"]
+
+def test_recommendation_exception(monkeypatch):
+    def mock_recommend_by_model_scores(*args, **kwargs):
+        raise Exception("Model failure")
+
+    monkeypatch.setattr("main.recommend_by_model_scores", mock_recommend_by_model_scores)
+
+    response = client.post(f'/recommendation?user_hash=test_user')
+
+    assert response.status_code == 500
+    assert "Error generating recommendations" in response.json()["detail"]
+
+@pytest.mark.parametrize("user_hash", ["user_123", "user_456"])
+def test_recommendation_history_hash(mocker, user_hash):
+    mock_recommend = mocker.patch("main.recommend_by_model_scores", return_value=["rec1", "rec2"])
+    mock_read_random = mocker.patch("main.read_random_dict_into_list", return_value=["rand1", "rand2"])
+    
+    response = client.post(f'/recommendation_history_hash?user_hash={user_hash}')
+
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+    mock_recommend.assert_called_once_with(user_hash, mocker.ANY, mocker.ANY)
+    mock_read_random.assert_called_once_with(mocker.ANY)
+
+def test_recommendation_history_hash_exception(monkeypatch):
+    def mock_recommend_by_model_scores(*args, **kwargs):
+        raise Exception("Model failure")
+
+    monkeypatch.setattr("main.recommend_by_model_scores", mock_recommend_by_model_scores)
+
+    response = client.post(f'/recommendation_history_hash?user_hash=test_user')
+    
+    assert response.status_code == 500
+    assert "Error generating recommendations" in response.json()["detail"]
+
