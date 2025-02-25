@@ -12,7 +12,7 @@ user_hash = st.text_input("User Hash", placeholder="Enter your hash...")
 if st.button("Get Recommendation"):
     if user_hash:
         # Define API endpoint
-        api_url = "http://localhost:8000/recommendation"  # Change this URL if needed
+        api_url = "http://fastapi:8000/recommendation"  # Change this URL if needed
 
         # Prepare payload
         payload = {"hash": user_hash}

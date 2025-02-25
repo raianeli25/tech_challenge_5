@@ -1,3 +1,5 @@
 pytest
 pytest-cov
 fastapi[all]
+pytest-mock-resources[docker]
+pytest-mock-resources[mongo]
