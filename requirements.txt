@@ -10,4 +10,5 @@ seaborn
 scipy
 git+https://github.com/daviddavo/lightfm
 pytest-asyncio
+httpx
 mongomock
