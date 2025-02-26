@@ -1,4 +1,9 @@
-## Tech Challenge #5 **🧩**
+## Datathon - Tech Challenge #5 **🧩**
+
+Grupo:
+* Chrystian Remes
+* Raiane Lima
+* Thales Mendes
 
 <br>
 
@@ -123,7 +128,13 @@ Na abertura do PR a pipeline de CI executa e roda o pytest para garantir que o c
 
 ### Desenvolvimentos futuros ⚒️
 
-- Pipeline para retreino de modelo periodicamente, conforme novas notícias e usuários vão chegando a base;
+- Aprofundamento da exploração dos dados para encontrar novas possíveis features (feature engineering). E.g. ter features de usuários e ou de notícias (tags) que poderiam ser usadas para clusterizar os users/items, melhorando a performance no cold-start.
+
+- Reorganização do tratamento dos dados: algumas das etapas (limpezas dos "histories" que não estão no formato de hash) poderiam ser feitas em etapas anteriores.
+
+- Aprofundar o conhecimento no uso da Lib LightFM, visando um melhor tuning dos hyper-parâmetros.
+
+- Pipeline para retreino de modelo periodicamente, conforme novas notícias e usuários vão chegando a base (também atuando na melhora nos cenários de cold-start).
   
 - Carregar os dados via bucket, dessa forma podemos integrar automaticamente as novas notícias no Mongo DB utilizando uma lambda function, por exemplo;
   
